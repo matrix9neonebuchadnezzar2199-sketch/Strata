@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>2026-10-15 開発日記 - Strata</title>
+<style>
+/* ===== GitHub Dark v2 — 開発日記テンプレート ===== */
+:root {
+  --gh-canvas: #0d1117;
+  --gh-canvas-subtle: #161b22;
+  --gh-canvas-inset: #010409;
+  --gh-border: #30363d;
+  --gh-border-muted: #21262d;
+  --gh-fg: #e6edf3;
+  --gh-fg-muted: #8b949e;
+  --gh-fg-subtle: #6e7681;
+  --gh-accent: #58a6ff;
+  --gh-accent-emphasis: #1f6feb;
+  --gh-success: #3fb950;
+  --gh-attention: #d29922;
+  --gh-danger: #f85149;
+  --gh-done-bg: rgba(35, 134, 54, 0.15);
+  --gh-code-bg: #161b22;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body.diary.diary-v2 {
+  margin: 0;
+  padding: 32px 16px 64px;
+  max-width: 1012px;
+  margin-inline: auto;
+  background: var(--gh-canvas);
+  color: var(--gh-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Header */
+.gh-repo-header {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--gh-border);
+}
+.gh-repo-header .eyebrow {
+  font-size: 12px;
+  color: var(--gh-fg-muted);
+  margin: 0 0 8px;
+}
+.gh-repo-header h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gh-accent);
+}
+.gh-repo-header .subtitle {
+  margin: 0 0 16px;
+  color: var(--gh-fg-muted);
+  font-size: 14px;
+}
+.gh-repo-header .header-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Labels */
+.gh-label {
+  display: inline-block;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 22px;
+  border-radius: 2em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.gh-label-scope { background: rgba(136, 87, 255, 0.15); color: #a371f7; border-color: rgba(163, 113, 247, 0.4); }
+.gh-label-type { background: rgba(110, 118, 129, 0.2); color: var(--gh-fg-muted); border-color: var(--gh-border); }
+.gh-label-ok { background: rgba(63, 185, 80, 0.15); color: var(--gh-success); border-color: rgba(63, 185, 80, 0.4); }
+.gh-label-warn { background: rgba(210, 153, 34, 0.15); color: var(--gh-attention); border-color: rgba(210, 153, 34, 0.4); }
+.gh-label-err { background: rgba(248, 81, 73, 0.15); color: var(--gh-danger); border-color: rgba(248, 81, 73, 0.4); }
+
+/* TOC */
+.gh-toc {
+  margin-bottom: 24px;
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--gh-canvas-subtle);
+}
+.gh-toc-title {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--gh-border-muted);
+  border-bottom: 1px solid var(--gh-border);
+  color: var(--gh-fg);
+}
+.gh-toc table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gh-toc th {
+  text-align: left;
+  padding: 8px 16px;
+  color: var(--gh-fg-muted);
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid var(--gh-border);
+  background: var(--gh-canvas-subtle);
+}
+.gh-toc td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--gh-border-muted);
+  vertical-align: middle;
+}
+.gh-toc tr:last-child td { border-bottom: none; }
+.gh-toc tr:hover td { background: rgba(88, 166, 255, 0.04); }
+.gh-toc td:first-child {
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  color: var(--gh-fg-muted);
+  white-space: nowrap;
+}
+
+/* Entry */
+.gh-entry {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  background: var(--gh-canvas-subtle);
+}
+.gh-entry h2 {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--gh-border);
+  color: var(--gh-fg);
+}
+.gh-entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--gh-fg-muted);
+}
+.gh-entry-meta .commit-hash {
+  font-family: ui-monospace, Consolas, monospace;
+  padding: 2px 6px;
+  background: var(--gh-code-bg);
+  border: 1px solid var(--gh-border);
+  border-radius: 4px;
+  color: var(--gh-accent);
+}
+.gh-entry-meta .pending { color: var(--gh-attention); font-style: italic; }
+
+.gh-entry h3 {
+  margin: 20px 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gh-fg-muted);
+}
+.gh-entry h3:first-of-type { margin-top: 0; }
+.gh-entry p { margin: 8px 0; }
+.gh-entry p.lead { color: var(--gh-fg-muted); font-size: 15px; }
+
+/* Tables */
+.gh-table-wrap {
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.gh-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gh-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--gh-border-muted);
+  color: var(--gh-fg-muted);
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid var(--gh-border);
+}
+.gh-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gh-border-muted);
+  vertical-align: top;
+}
+.gh-table tr:last-child td { border-bottom: none; }
+.gh-table tbody tr:hover td { background: rgba(88, 166, 255, 0.04); }
+
+/* Flow (horizontal) */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 16px;
+  background: var(--gh-canvas-inset);
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+}
+.flow-box {
+  padding: 8px 14px;
+  background: var(--gh-canvas-subtle);
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gh-fg);
+}
+.flow-box.accent { border-color: var(--gh-accent-emphasis); color: var(--gh-accent); }
+.flow-box.done { border-color: var(--gh-success); background: var(--gh-done-bg); color: var(--gh-success); }
+.flow-arrow { color: var(--gh-fg-subtle); font-size: 16px; user-select: none; }
+
+/* Pipeline (vertical, GitHub Actions style) */
+.pipeline { margin: 12px 0; }
+.pipeline-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.pipeline-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  border: 2px solid var(--gh-border);
+  background: var(--gh-canvas);
+}
+.pipeline-step.done .pipeline-marker { background: var(--gh-success); border-color: var(--gh-success); }
+.pipeline-step.active .pipeline-marker { background: var(--gh-accent); border-color: var(--gh-accent); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3); }
+.pipeline-step.pending .pipeline-marker { background: transparent; }
+.pipeline-step.failed .pipeline-marker { background: var(--gh-danger); border-color: var(--gh-danger); }
+.pipeline-body {
+  flex: 1;
+  padding-bottom: 16px;
+  border-left: 2px solid var(--gh-border);
+  margin-left: 5px;
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+.pipeline-step:last-child .pipeline-body { border-left-color: transparent; padding-bottom: 0; }
+.pipeline-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.pipeline-desc { font-size: 13px; color: var(--gh-fg-muted); margin: 0; }
+
+/* Diff list */
+.diff-list { list-style: none; padding: 0; margin: 12px 0; font-family: ui-monospace, Consolas, monospace; font-size: 12px; border: 1px solid var(--gh-border); border-radius: 6px; overflow: hidden; }
+.diff-list li { padding: 4px 12px; border-bottom: 1px solid var(--gh-border-muted); display: flex; gap: 8px; align-items: baseline; }
+.diff-list li:last-child { border-bottom: none; }
+.diff-mark { width: 16px; font-weight: 700; flex-shrink: 0; }
+.diff-add { background: rgba(63, 185, 80, 0.08); }
+.diff-add .diff-mark { color: var(--gh-success); }
+.diff-mod { background: rgba(210, 153, 34, 0.06); }
+.diff-mod .diff-mark { color: var(--gh-attention); }
+.diff-del { background: rgba(248, 81, 73, 0.08); }
+.diff-del .diff-mark { color: var(--gh-danger); }
+
+/* Callout */
+.gh-callout {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border: 1px solid var(--gh-border);
+  border-left: 3px solid var(--gh-accent-emphasis);
+  border-radius: 0 6px 6px 0;
+  background: rgba(88, 166, 255, 0.06);
+  font-size: 13px;
+}
+.gh-callout.warn { border-left-color: var(--gh-attention); background: rgba(210, 153, 34, 0.06); }
+.gh-callout .callout-tag { font-size: 11px; font-weight: 600; color: var(--gh-accent); margin-right: 8px; }
+
+/* Code */
+code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  background: var(--gh-code-bg);
+  border: 1px solid var(--gh-border);
+  border-radius: 4px;
+  color: var(--gh-fg);
+}
+a { color: var(--gh-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { font-weight: 600; color: var(--gh-fg); }
+
+footer.gh-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gh-border);
+  font-size: 12px;
+  color: var(--gh-fg-subtle);
+  text-align: center;
+}
+</style>
+</head>
+<body class="diary diary-v2">
+
+<header class="gh-repo-header">
+  <p class="eyebrow">Development Log / 2026-10-15</p>
+  <h1>Strata</h1>
+  <p class="subtitle">IQ3_S に拒否方向ベクトルを載せて起動</p>
+  <div class="header-labels">
+    <span class="gh-label gh-label-type">dev</span>
+    <span class="gh-label gh-label-scope">Strata</span>
+  </div>
+</header>
+
+<section class="gh-toc">
+  <h2 class="gh-toc-title">Timeline</h2>
+  <table>
+    <thead>
+      <tr><th>時刻</th><th>概要</th><th>種別</th><th>Status</th><th>詳細</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>18:42</td>
+        <td>IQ3_S に拒否方向ベクトルを載せて起動</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1842">詳細</a></td>
+      </tr>
+      <tr>
+        <td>19:01</td>
+        <td>IQ3_S のコンテキストを 128K にして再起動</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1901">詳細</a></td>
+      </tr>
+      <tr>
+        <td>19:55</td>
+        <td>RTX 5080 で IQ3_S の community benchmark</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1955">詳細</a></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<main>
+  <article class="gh-entry" id="entry-1842">
+    <h2>IQ3_S に拒否方向ベクトルを載せて起動</h2>
+    <div class="gh-entry-meta">
+      <span class="gh-label gh-label-type">dev</span>
+      <span class="gh-label gh-label-ok">ok</span>
+      <time>18:42</time>
+    </div>
+    <h3>概要</h3>
+    <p class="lead">alesha-pro の制御ベクトルだけを置き、既存の IQ3_S シャードで setup を通した。エンジンは層 4–44 の射影を有効にして 8080 で待っている。</p>
+    <h3>作業フロー</h3>
+    <div class="flow">
+      <div class="flow-box">ベクトル取得</div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box accent">setup</div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box done">8080 ready</div>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li class="diff-add"><span class="diff-mark">+</span> Strata-data/models/alesha-pro/Huihui-Qwen3.8-Flash-Next-refusal-direction-r.gguf（483520 bytes）</li>
+      <li class="diff-mod"><span class="diff-mark">M</span> strata-iq3_s.json（control-vector 4 フラグ。旧設定は .bak）</li>
+      <li class="diff-mod"><span class="diff-mark">M</span> run-iq3_s.bat（setup が書き直し）</li>
+    </ul>
+    <h3>設計判断</h3>
+    <div class="gh-table-wrap">
+      <table class="gh-table">
+        <thead><tr><th>判断</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td>IQ3_S の GGUF は再取得しない</td><td>公開 SHA256 が既存シャードと同一の公式コピー</td></tr>
+          <tr><td>画像は off</td><td>16 GB の表示用カードで、以前の設定も画像なし</td></tr>
+          <tr><td>context 65536 / KV int8</td><td>5080 で測った校正（pcie-frac 0.35 ほか）を setup が戻す</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>検証</h3>
+    <div class="gh-table-wrap">
+      <table class="gh-table">
+        <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td>ベクトルのハッシュ</td><td>SHA256SUMS</td><td>59f9ae8b4372107ae79044278a4406bdfe8f8861fe599aa5848515f0d072be38</td></tr>
+          <tr><td>射影の有効化</td><td>strata-iq3_s.log</td><td>control vector mode = project, layers 4..44 (41 steered)</td></tr>
+          <tr><td>待受</td><td>setup の出力</td><td>ready: http://127.0.0.1:8080/v1 、context 65536</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+  <article class="gh-entry" id="entry-1901">
+    <h2>IQ3_S のコンテキストを 128K にして再起動</h2>
+    <div class="gh-entry-meta">
+      <span class="gh-label gh-label-type">dev</span>
+      <span class="gh-label gh-label-ok">ok</span>
+      <time>19:01</time>
+    </div>
+    <h3>概要</h3>
+    <p class="lead">起動設定のコンテキストを 131072 にし、拒否方向ベクトルを付けたまま run-iq3_s.bat で再起動した。</p>
+    <h3>作業フロー</h3>
+    <div class="flow">
+      <div class="flow-box">65536 を停止</div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box accent">131072</div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box done">8080 ready</div>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li class="diff-mod"><span class="diff-mark">M</span> strata-iq3_s.json（--max-context 65536 → 131072）</li>
+    </ul>
+    <h3>検証</h3>
+    <div class="gh-table-wrap">
+      <table class="gh-table">
+        <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td>待受</td><td>run-iq3_s.bat の出力</td><td>ready、context 131072 tokens</td></tr>
+          <tr><td>射影</td><td>strata-iq3_s.log 19:01:12</td><td>control vector mode = project, layers 4..44 (41 steered)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+  <article class="gh-entry" id="entry-1955">
+    <h2>RTX 5080 で IQ3_S の community benchmark</h2>
+    <div class="gh-entry-meta">
+      <span class="gh-label gh-label-type">dev</span>
+      <span class="gh-label gh-label-ok">ok</span>
+      <time>19:55</time>
+    </div>
+    <h3>概要</h3>
+    <p class="lead">起動中の IQ3_S（engine 0.1.44.1、context 131072、KV int8、拒否方向ベクトルあり）で、短い話と 38K を各 3 回測った。7900 XT の結果ファイルは上書きしていない。</p>
+    <h3>作業フロー</h3>
+    <div class="flow">
+      <div class="flow-box">ウォームアップ 2 本</div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box accent">計測 6 本</div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box done">last_timings</div>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li class="diff-add"><span class="diff-mark">+</span> bench/results/2026-10-15-community-rtx-5080/（README、runs-iq3_s-01441.json、run_bench.py、設定の写し）</li>
+    </ul>
+    <h3>検証</h3>
+    <div class="gh-table-wrap">
+      <table class="gh-table">
+        <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+        <tbody>
+          <tr><td>38K 読み</td><td>last_timings の中央値</td><td>3,428.2 tok/s（3,402.7–3,434.9）</td></tr>
+          <tr><td>38K 生成</td><td>last_timings の中央値</td><td>93.0 tok/s（86.6–98.3）</td></tr>
+          <tr><td>合言葉</td><td>回答本文</td><td>計測 3 本のうち 2 本が amber-keel-2904。1 本は 256 で思考のまま打ち切り</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</main>
+
+<footer class="gh-footer">
+  <p>Cursor Dev Diary · style v2 (GitHub) · 2026-10-15</p>
+</footer>
+</body>
+</html>

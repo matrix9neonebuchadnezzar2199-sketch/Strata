@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>2026-10-16 開発日記 - Strata</title>
+<style>
+/* ===== GitHub Dark v2 — 開発日記テンプレート ===== */
+:root {
+  --gh-canvas: #0d1117;
+  --gh-canvas-subtle: #161b22;
+  --gh-canvas-inset: #010409;
+  --gh-border: #30363d;
+  --gh-border-muted: #21262d;
+  --gh-fg: #e6edf3;
+  --gh-fg-muted: #8b949e;
+  --gh-fg-subtle: #6e7681;
+  --gh-accent: #58a6ff;
+  --gh-accent-emphasis: #1f6feb;
+  --gh-success: #3fb950;
+  --gh-attention: #d29922;
+  --gh-danger: #f85149;
+  --gh-done-bg: rgba(35, 134, 54, 0.15);
+  --gh-code-bg: #161b22;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body.diary.diary-v2 {
+  margin: 0;
+  padding: 32px 16px 64px;
+  max-width: 1012px;
+  margin-inline: auto;
+  background: var(--gh-canvas);
+  color: var(--gh-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Header */
+.gh-repo-header {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--gh-border);
+}
+.gh-repo-header .eyebrow {
+  font-size: 12px;
+  color: var(--gh-fg-muted);
+  margin: 0 0 8px;
+}
+.gh-repo-header h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--gh-accent);
+}
+.gh-repo-header .subtitle {
+  margin: 0 0 16px;
+  color: var(--gh-fg-muted);
+  font-size: 14px;
+}
+.gh-repo-header .header-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Labels */
+.gh-label {
+  display: inline-block;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 22px;
+  border-radius: 2em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.gh-label-scope { background: rgba(136, 87, 255, 0.15); color: #a371f7; border-color: rgba(163, 113, 247, 0.4); }
+.gh-label-type { background: rgba(110, 118, 129, 0.2); color: var(--gh-fg-muted); border-color: var(--gh-border); }
+.gh-label-ok { background: rgba(63, 185, 80, 0.15); color: var(--gh-success); border-color: rgba(63, 185, 80, 0.4); }
+.gh-label-warn { background: rgba(210, 153, 34, 0.15); color: var(--gh-attention); border-color: rgba(210, 153, 34, 0.4); }
+.gh-label-err { background: rgba(248, 81, 73, 0.15); color: var(--gh-danger); border-color: rgba(248, 81, 73, 0.4); }
+
+/* TOC */
+.gh-toc {
+  margin-bottom: 24px;
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--gh-canvas-subtle);
+}
+.gh-toc-title {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--gh-border-muted);
+  border-bottom: 1px solid var(--gh-border);
+  color: var(--gh-fg);
+}
+.gh-toc table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gh-toc th {
+  text-align: left;
+  padding: 8px 16px;
+  color: var(--gh-fg-muted);
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid var(--gh-border);
+  background: var(--gh-canvas-subtle);
+}
+.gh-toc td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--gh-border-muted);
+  vertical-align: middle;
+}
+.gh-toc tr:last-child td { border-bottom: none; }
+.gh-toc tr:hover td { background: rgba(88, 166, 255, 0.04); }
+.gh-toc td:first-child {
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  color: var(--gh-fg-muted);
+  white-space: nowrap;
+}
+
+/* Entry */
+.gh-entry {
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  background: var(--gh-canvas-subtle);
+}
+.gh-entry h2 {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--gh-border);
+  color: var(--gh-fg);
+}
+.gh-entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--gh-fg-muted);
+}
+.gh-entry-meta .commit-hash {
+  font-family: ui-monospace, Consolas, monospace;
+  padding: 2px 6px;
+  background: var(--gh-code-bg);
+  border: 1px solid var(--gh-border);
+  border-radius: 4px;
+  color: var(--gh-accent);
+}
+.gh-entry-meta .pending { color: var(--gh-attention); font-style: italic; }
+
+.gh-entry h3 {
+  margin: 20px 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gh-fg-muted);
+}
+.gh-entry h3:first-of-type { margin-top: 0; }
+.gh-entry p { margin: 8px 0; }
+.gh-entry p.lead { color: var(--gh-fg-muted); font-size: 15px; }
+
+/* Tables */
+.gh-table-wrap {
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.gh-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.gh-table th {
+  text-align: left;
+  padding: 8px 12px;
+  background: var(--gh-border-muted);
+  color: var(--gh-fg-muted);
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid var(--gh-border);
+}
+.gh-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gh-border-muted);
+  vertical-align: top;
+}
+.gh-table tr:last-child td { border-bottom: none; }
+.gh-table tbody tr:hover td { background: rgba(88, 166, 255, 0.04); }
+
+/* Flow (horizontal) */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 16px;
+  background: var(--gh-canvas-inset);
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+}
+.flow-box {
+  padding: 8px 14px;
+  background: var(--gh-canvas-subtle);
+  border: 1px solid var(--gh-border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gh-fg);
+}
+.flow-box.accent { border-color: var(--gh-accent-emphasis); color: var(--gh-accent); }
+.flow-box.done { border-color: var(--gh-success); background: var(--gh-done-bg); color: var(--gh-success); }
+.flow-arrow { color: var(--gh-fg-subtle); font-size: 16px; user-select: none; }
+
+/* Pipeline (vertical, GitHub Actions style) */
+.pipeline { margin: 12px 0; }
+.pipeline-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.pipeline-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  border: 2px solid var(--gh-border);
+  background: var(--gh-canvas);
+}
+.pipeline-step.done .pipeline-marker { background: var(--gh-success); border-color: var(--gh-success); }
+.pipeline-step.active .pipeline-marker { background: var(--gh-accent); border-color: var(--gh-accent); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3); }
+.pipeline-step.pending .pipeline-marker { background: transparent; }
+.pipeline-step.failed .pipeline-marker { background: var(--gh-danger); border-color: var(--gh-danger); }
+.pipeline-body {
+  flex: 1;
+  padding-bottom: 16px;
+  border-left: 2px solid var(--gh-border);
+  margin-left: 5px;
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+.pipeline-step:last-child .pipeline-body { border-left-color: transparent; padding-bottom: 0; }
+.pipeline-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.pipeline-desc { font-size: 13px; color: var(--gh-fg-muted); margin: 0; }
+
+/* Diff list */
+.diff-list { list-style: none; padding: 0; margin: 12px 0; font-family: ui-monospace, Consolas, monospace; font-size: 12px; border: 1px solid var(--gh-border); border-radius: 6px; overflow: hidden; }
+.diff-list li { padding: 4px 12px; border-bottom: 1px solid var(--gh-border-muted); display: flex; gap: 8px; align-items: baseline; }
+.diff-list li:last-child { border-bottom: none; }
+.diff-mark { width: 16px; font-weight: 700; flex-shrink: 0; }
+.diff-add { background: rgba(63, 185, 80, 0.08); }
+.diff-add .diff-mark { color: var(--gh-success); }
+.diff-mod { background: rgba(210, 153, 34, 0.06); }
+.diff-mod .diff-mark { color: var(--gh-attention); }
+.diff-del { background: rgba(248, 81, 73, 0.08); }
+.diff-del .diff-mark { color: var(--gh-danger); }
+
+/* Callout */
+.gh-callout {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border: 1px solid var(--gh-border);
+  border-left: 3px solid var(--gh-accent-emphasis);
+  border-radius: 0 6px 6px 0;
+  background: rgba(88, 166, 255, 0.06);
+  font-size: 13px;
+}
+.gh-callout.warn { border-left-color: var(--gh-attention); background: rgba(210, 153, 34, 0.06); }
+.gh-callout .callout-tag { font-size: 11px; font-weight: 600; color: var(--gh-accent); margin-right: 8px; }
+
+/* Code */
+code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  background: var(--gh-code-bg);
+  border: 1px solid var(--gh-border);
+  border-radius: 4px;
+  color: var(--gh-fg);
+}
+a { color: var(--gh-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { font-weight: 600; color: var(--gh-fg); }
+
+footer.gh-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gh-border);
+  font-size: 12px;
+  color: var(--gh-fg-subtle);
+  text-align: center;
+}
+</style>
+</head>
+<body class="diary diary-v2">
+
+<header class="gh-repo-header">
+  <p class="eyebrow">Development Log / 2026-10-16</p>
+  <h1>Strata</h1>
+  <p class="subtitle">Qwen3.6-35B-A3B UD-Q4_K_XL を入れて起動し、回答を見て停止した</p>
+  <div class="header-labels">
+    <span class="gh-label gh-label-type">dev</span>
+    <span class="gh-label gh-label-scope">Strata</span>
+  </div>
+</header>
+
+<section class="gh-toc">
+  <h2 class="gh-toc-title">Timeline</h2>
+  <table>
+    <thead>
+      <tr><th>時刻</th><th>概要</th><th>種別</th><th>Status</th><th>詳細</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>09:07</td>
+        <td>UD-Q4_K_XL を起動し、回答を見て停止</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-0907">詳細</a></td>
+      </tr>
+      <tr>
+        <td>09:09</td>
+        <td>Qwen3.6 のモデルと起動ファイルを削除</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-0909">詳細</a></td>
+      </tr>
+      <tr>
+        <td>09:31</td>
+        <td>Chat と Monitor を HUD にした画面原紙</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-warn">warn</span></td>
+        <td><a href="#entry-0931">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:02</td>
+        <td>HUD の開閉、Load／Unload、速度リング、昼夜トグル</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-warn">warn</span></td>
+        <td><a href="#entry-1002">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:14</td>
+        <td>HUD を起動中の IQ3_S のチャットにした</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1014">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:32</td>
+        <td>速度リングの位置と Load のモデル選択</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1032">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:40</td>
+        <td>Load の詳細を選んだ行から別面へ広げる</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1040">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:42</td>
+        <td>プロンプトのフォーカス枠を消す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1042">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:52</td>
+        <td>生成中の表示が固まる原因を直す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1052">詳細</a></td>
+      </tr>
+      <tr>
+        <td>10:56</td>
+        <td>吹き出しのコピーと回答下の計測</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1056">詳細</a></td>
+      </tr>
+      <tr>
+        <td>12:32</td>
+        <td>回答下の表示を英語にし、Copy と .md を足す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1232">詳細</a></td>
+      </tr>
+      <tr>
+        <td>16:18</td>
+        <td>チャットを 15080 で起動</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1618">詳細</a></td>
+      </tr>
+      <tr>
+        <td>16:25</td>
+        <td>入力欄にオリジナルの＋などを戻す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1625">詳細</a></td>
+      </tr>
+      <tr>
+        <td>16:26</td>
+        <td>速度リングの選択肢を 100 からにする</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1626">詳細</a></td>
+      </tr>
+      <tr>
+        <td>16:28</td>
+        <td>添付ファイルをチャットの外上に出す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1628">詳細</a></td>
+      </tr>
+      <tr>
+        <td>16:34</td>
+        <td>クリップの添付をファイルカードにする</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1634">詳細</a></td>
+      </tr>
+      <tr>
+        <td>16:53</td>
+        <td>添付をプロンプト上の代表カードにする</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1653">詳細</a></td>
+      </tr>
+      <tr>
+        <td>17:20</td>
+        <td>サイドメニューに Monitor / History を足す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1720">詳細</a></td>
+      </tr>
+      <tr>
+        <td>17:24</td>
+        <td>添付カードを小さくしダークグレーにする</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1724">詳細</a></td>
+      </tr>
+      <tr>
+        <td>17:25</td>
+        <td>History を英語にし、HUD を起動できるようにする</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1725">詳細</a></td>
+      </tr>
+      <tr>
+        <td>17:29</td>
+        <td>画面の日本語を英語にする</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1729">詳細</a></td>
+      </tr>
+      <tr>
+        <td>18:05</td>
+        <td>開いている履歴の削除と、読み込み中の添付取消を直す</td>
+        <td><span class="gh-label gh-label-type">dev</span></td>
+        <td><span class="gh-label gh-label-ok">ok</span></td>
+        <td><a href="#entry-1805">詳細</a></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<main>
+  <article class="gh-entry" id="entry-0907">
+    <h2>09:07 — Qwen3.6 UD-Q4_K_XL を起動して停止</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-type">dev</span> 09:07</p>
+    <h3>概要</h3>
+    <p class="lead">families 探査が CUDA の DLL フォルダを PATH に足さないため、Qwen3.6 のセットアップが「未対応」で止まっていた。探査に lib_dirs を渡すようにし、UD-Q4_K_XL を配置して 32K で起動した。回答が低いのでサーバーは停止した。</p>
+    <h3>作業フロー</h3>
+    <div class="pipeline">
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">探査を直す</div><p class="pipeline-desc">engine_families がサーバーと同じく lib_dirs を PATH の先頭に置く。実機の探査は qwen35moe を返した。</p></div></div>
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">配置して起動</div><p class="pipeline-desc">SHA-256 確認済みの GGUF を Strata-data に置き、ポート 8080 で hybrid（層あたり 89/256 を VRAM）として起動した。</p></div></div>
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">停止</div><p class="pipeline-desc">最初の回答を見て停止。プロセスツリーを終了し、8080 は閉じて strata.exe は残っていない。</p></div></div>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li class="diff-mod"><span class="diff-mark">M</span> setup.py — engine_families に lib_dirs を渡し、install_own_path から渡す</li>
+      <li class="diff-mod"><span class="diff-mark">M</span> tools/test_setup_qwen36.py — モックの引数と、PATH 先頭の回帰テスト</li>
+      <li class="diff-add"><span class="diff-mark">+</span> strata-qwen36-ud-q4_k_xl.json / run-qwen36-ud-q4_k_xl.bat — セットアップが書いた起動設定</li>
+    </ul>
+    <h3>設計判断</h3>
+    <table class="gh-table">
+      <thead><tr><th>判断</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>文脈長 32768</td><td>VRAM 15.9 GB ではセットアップの推奨が 32K。128K は選んでいない。</td></tr>
+        <tr><td>起動コードだけ直した</td><td>READY な CUDA エンジンは DLL フォルダを渡すと qwen35moe を実行できる。未マージの #2565 と同じ箇所。</td></tr>
+      </tbody>
+    </table>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>単体テスト</td><td>python -m unittest tools.test_setup_qwen36</td><td>13 件 OK</td></tr>
+        <tr><td>実機の families</td><td>cu13 の lib_dirs を渡して strata.exe --families</td><td>qwen4exp と qwen35moe</td></tr>
+        <tr><td>起動</td><td>GET /v1/status</td><td>loaded true、engine 0.1.44.1、context 32768。hybrid 89/256、専門家 18.75 GiB はピン留め RAM</td></tr>
+        <tr><td>停止</td><td>setup.py のプロセスツリーを taskkill /T</td><td>8080 の待受なし。strata.exe なし</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-0909">
+    <h2>09:09 — Qwen3.6 を削除</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-type">dev</span> 09:09</p>
+    <h3>概要</h3>
+    <p class="lead">ダウンロードした UD-Q4_K_XL、トークナイザ、起動設定、ログ、空の qwen36-Q8_0 フォルダを消した。IQ3_S と alesha-pro はそのまま。</p>
+    <h3>作業フロー</h3>
+    <div class="pipeline">
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">モデル</div><p class="pipeline-desc">Strata-data\models\qwen36-UD-Q4_K_XL（22.9 GB の GGUF と .done）を削除。</p></div></div>
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">起動一式</div><p class="pipeline-desc">packs\qwen36-ud-q4_k_xl、strata-qwen36-ud-q4_k_xl.json、run-qwen36-ud-q4_k_xl.bat、ログを削除。</p></div></div>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li class="diff-del"><span class="diff-mark">-</span> Strata-data\models\qwen36-UD-Q4_K_XL</li>
+      <li class="diff-del"><span class="diff-mark">-</span> Strata-data\models\qwen36-Q8_0（空）</li>
+      <li class="diff-del"><span class="diff-mark">-</span> Strata-data\packs\qwen36-ud-q4_k_xl</li>
+      <li class="diff-del"><span class="diff-mark">-</span> strata-qwen36-ud-q4_k_xl.json / .log、run-qwen36-ud-q4_k_xl.bat</li>
+    </ul>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>残存</td><td>Strata-data を qwen36 / Qwen3.6 で再検索</td><td>モデルとパックはなし。models に残るのは alesha-pro と IQ3_S</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-0931">
+    <h2>09:31 — Chat と Monitor の HUD 原紙</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-warn">warn</span> 09:31</p>
+    <h3>概要</h3>
+    <p class="lead">Soft Machine、標準サイドバー。Monitor の項目を Chat 左の縦 HUD にし、About はテーマ切替の右の歯車。Engine・モデル名・コンテキスト・Images はタイトルの右。正本は Strata-main の外。承認前なので main にはコピーしていない。</p>
+    <h3>作業フロー</h3>
+    <div class="pipeline">
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">モデル</div><p class="pipeline-desc">起動セッション、HUD 計測、リクエスト、発話、About。</p></div></div>
+      <div class="pipeline-step"><div class="pipeline-body"><div class="pipeline-title">画面</div><p class="pipeline-desc">strata-chat-hud.html。幅ドラッグ、境界の▼、折りたたみ時の吹き出し、文字サイズ、ライト／ダーク。</p></div></div>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li class="diff-add"><span class="diff-mark">+</span> H:\CURSOR\Strata\strata-chat-hud.html</li>
+      <li class="diff-add"><span class="diff-mark">+</span> H:\CURSOR\Strata\docs\domain-model.json</li>
+      <li class="diff-add"><span class="diff-mark">+</span> H:\CURSOR\Strata\docs\design-board.html</li>
+    </ul>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>配置</td><td>1280px で表示</td><td>タイトル右に4項目が横一列。歯車はテーマの右。HUD は左</td></tr>
+        <tr><td>main</td><td>serve/web は未変更</td><td>承認後にコピーする</td></tr>
+      </tbody>
+    </table>
+    <h3>残課題</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr><td>画面とドメインモデルの承認</td><td>未</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-1002">
+    <h2>10:02 — HUD の操作を足した</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-warn">warn</span> 10:02</p>
+    <h3>概要</h3>
+    <p class="lead">ブロックごとに ▼。並びは Live（先頭が VRAM）、Context、Machine。バーは緑。Load は run-iq3_s.bat のホバー、Unload は停止表示。速度リングは 150 t/s で MAX。テーマは昼夜トグル。</p>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>Unload</td><td>ボタン</td><td>Load が押せ、Unload は押せない。VRAM は — / 16 GB、t/s は 0.0</td></tr>
+        <tr><td>Load</td><td>ボタン</td><td>run-iq3_s.bat が出る。選ぶと Load が再び押せない</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-1014">
+    <h2>10:14 — HUD を起動中の IQ3_S で使えるようにした</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 10:14</p>
+    <h3>概要</h3>
+    <p class="lead">起動中のサーバーはページを毎回ディスクから読む。HUD にチャットと /metrics を繋ぎ、serve/web/index.html へ置いた。モデルの再起動はしていない。</p>
+    <h3>作業フロー</h3>
+    <div class="flow">
+      <span class="flow-box done">旧 index を退避</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-box done">HUD を API に接続</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-box done">index.html へコピー</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-box accent">pong で確認</span>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li><span class="diff-add">+</span> H:\CURSOR\Strata\strata-chat-hud.html — 送信、ストリーム、/metrics、Load/Unload の JSON</li>
+      <li><span class="diff-add">+</span> Strata-main\serve\web\index.html — 上のページを配信</li>
+      <li><span class="diff-add">+</span> H:\CURSOR\Strata\strata-chat-classic.html — 差し替え前の Chat ページ</li>
+    </ul>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>配信</td><td>GET /</td><td>200。HUD。旧タブは含まれない</td></tr>
+        <tr><td>表示</td><td>ブラウザ</td><td>Idle、VRAM 15.1 / 16 GB、モデル名、Load 無効、Unload 有効</td></tr>
+        <tr><td>送信</td><td>思考 Off で pong</td><td>本文 pong。Decode 27.7 t/s。Context 17 / 131,072。リングは停止後 0.0</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-1032">
+    <h2>10:32 — 速度リングと Load のモデル選択</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 10:32</p>
+    <h3>概要</h3>
+    <p class="lead">リングはプロンプトの上、箱の右上へ移した。リング内のクリックで最大値を 50 刻みで選ぶ。Load の一覧はクリック以外で閉じない。IQ3_S は緑チェック、未配置は NO Model。ダウンロードは YES のあと setup.py が既定の Strata-data へ置く。</p>
+    <h3>作業フロー</h3>
+    <div class="flow">
+      <span class="flow-box done">リング位置と上限</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-box done">一覧が閉じる原因を外す</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-box done">カタログ 8091</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-box accent">画面で確認</span>
+    </div>
+    <h3>変更一覧</h3>
+    <ul class="diff-list">
+      <li><span class="diff-add">+</span> strata-chat-hud.html と serve/web/index.html</li>
+      <li><span class="diff-add">+</span> serve/hud_catalog.py — 配置の有無、ダウンロード、Context/KV での再起動</li>
+    </ul>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>リング</td><td>座標</td><td>下端 606、プロンプト上端 608。重ならない</td></tr>
+        <tr><td>上限</td><td>リング内</td><td>50, 100, 150, 200, 250, 300</td></tr>
+        <tr><td>一覧</td><td>Load を開いて待つ</td><td>IQ3_S が ✓。他は NO Model。マウス移動と 1 秒更新でも開いたまま</td></tr>
+        <tr><td>未配置</td><td>Q2_0</td><td>「ダウンロードする？」NO で閉じた。取得はしていない</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-1040">
+    <h2>10:40 — Load の詳細を別面へ広げる</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 10:40</p>
+    <h3>概要</h3>
+    <p class="lead">起動設定とダウンロード確認は一覧の下から外した。選んだ行が破線の枠になり、その位置から右上の詳細面へ 0.82 秒で広がる。他の行は薄くなる。</p>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>IQ3_S</td><td>Load から選択</td><td>詳細は一覧の外。385×248。Context / KV / Images と Load。元の行は破線</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-1042">
+    <h2>10:42 — プロンプトのフォーカス枠を消す</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 10:42</p>
+    <h3>概要</h3>
+    <p class="lead">メッセージ欄にフォーカスしたときの白い枠を出さない。</p>
+    <h3>検証</h3>
+    <table class="gh-table">
+      <thead><tr><th>項目</th><th>方法</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>フォーカス</td><td>プロンプトをクリック</td><td>outline は none、枠の幅は 0</td></tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="gh-entry" id="entry-1052">
+    <h2>10:52 — 生成中の表示が固まる原因</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 10:52</p>
+    <h3>概要</h3>
+    <p class="lead">コンテキストはプロンプトトークンだけを見ていた。回答の描画はトークンごとに画面を書き直していて、長くなるとメインスレッドが止まり、メーターも回答も完了まで更新されなかった。描画は1フレームに1回、コンテキストは生成トークンを足す。</p>
+  </article>
+  <article class="gh-entry" id="entry-1056">
+    <h2>10:56 — 吹き出しのコピーと回答下の計測</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 10:56</p>
+    <h3>概要</h3>
+    <p class="lead">自分と相手の吹き出しに Copy を付けた。コード枠の Copy はスクロールに付いてくるが、枠の外には出ない。回答の下に速度、使ったコンテキスト、生成時間（mm:ss）を出す。</p>
+  </article>
+  <article class="gh-entry" id="entry-1232">
+    <h2>12:32 — 回答下の英語表示とコピー</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 12:32</p>
+    <h3>概要</h3>
+    <p class="lead">回答下の Speed / Context / Time を英語にした。同じ段に、表示どおりの全文をコピーする Copy と、Markdown のままコピーする .md を置いた。</p>
+  </article>
+  <article class="gh-entry" id="entry-1618">
+    <h2>16:18 — チャットを 15080 で起動</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 16:18</p>
+    <h3>概要</h3>
+    <p class="lead">8080 と 8091 は Windows の除外範囲 8036–8135 に入って待受できなかった。IQ3_S を 15080、モデル一覧を 15091 で起動した。</p>
+  </article>
+  <article class="gh-entry" id="entry-1625">
+    <h2>16:25 — 入力欄のオリジナル操作を戻す</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 16:25</p>
+    <h3>概要</h3>
+    <p class="lead">新規チャット（＋）、添付、Markdown 保存、サンプリングを入力欄へ戻した。ページは http://127.0.0.1:15080/ で開ける。</p>
+  </article>
+  <article class="gh-entry" id="entry-1626">
+    <h2>16:26 — 速度リングの選択肢</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 16:26</p>
+    <h3>概要</h3>
+    <p class="lead">右下の速度リングを開いたときの上限は 100、150、200、250、300。50 は出さない。</p>
+  </article>
+  <article class="gh-entry" id="entry-1628">
+    <h2>16:28 — 添付ファイルの表示</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 16:28</p>
+    <h3>概要</h3>
+    <p class="lead">添付はチャット欄の外、上側の左から順に出る。バーが伸び、読み終わるとチェックへ収束する。</p>
+  </article>
+  <article class="gh-entry" id="entry-1634">
+    <h2>16:34 — クリップの添付</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 16:34</p>
+    <h3>概要</h3>
+    <p class="lead">テキスト以外もカードで出す。画像はサムネイル。送信後の吹き出しもファイルの中身ではなくカード。</p>
+  </article>
+  <article class="gh-entry" id="entry-1653">
+    <h2>16:53 — 添付をプロンプト上の代表カードにする</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 16:53</p>
+    <h3>概要</h3>
+    <p class="lead">添付カードの下面をプロンプトの上端に置いた。複数は代表1枚と右端の件数。クリックで上へ開き、削除は行を縮めて詰め、元に戻せる。</p>
+    <h3>変更ファイル</h3>
+    <ul>
+      <li>H:\CURSOR\Strata\strata-chat-hud.html</li>
+      <li>H:\CURSOR\Strata\Strata-main\serve\web\index.html</li>
+    </ul>
+  </article>
+  <article class="gh-entry" id="entry-1720">
+    <h2>17:20 — サイドメニューに Monitor / History を足す</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 17:20</p>
+    <h3>概要</h3>
+    <p class="lead">検索欄を Monitor / History のピルタブにした。History はフォルダとスレッドの2ゾーンで、フォルダは2段まで。ドラッグで移動、削除は YES/NO、右端に容量。スレッドを開くと続きから話せる。プロンプトへ落とすと要約できる。</p>
+    <h3>設計判断</h3>
+    <ul>
+      <li>保存先はブラウザの localStorage（strata.hud.history.v1）。サーバーは触らない。</li>
+      <li>添付の中身は保存しない。名前とサイズだけ残し、吹き出しには NOT KEPT のカードを出す。</li>
+      <li>要約は送信と同じ経路で流すので、結果はそのままチャットの文脈に入る。</li>
+      <li>回答の Markdown に見出しと箇条書きを足した。</li>
+    </ul>
+    <h3>検証</h3>
+    <ul>
+      <li>ピルは 0→124px を約 0.3 秒で滑り、少し行き過ぎて戻る。</li>
+      <li>スレッドの作成と保存、フォルダの入れ子、3段目の拒否、続きの表示、Markdown 要約、YES/NO 削除を実機で確認した。</li>
+    </ul>
+    <h3>変更ファイル</h3>
+    <ul>
+      <li>H:\CURSOR\Strata\strata-chat-hud.html</li>
+      <li>H:\CURSOR\Strata\Strata-main\serve\web\index.html</li>
+    </ul>
+  </article>
+  <article class="gh-entry" id="entry-1724">
+    <h2>17:24 — 添付カードを小さくしダークグレーにする</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 17:24</p>
+    <h3>概要</h3>
+    <p class="lead">添付カードの背景をチャットと別のダークグレー（#1d2229）にした。高さ 72px→46px、幅 340px→280px。状態・チェック・× は1行に並べた。</p>
+  </article>
+  <article class="gh-entry" id="entry-1725">
+    <h2>17:25 — History を英語にし、HUD を起動できるようにする</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 17:25</p>
+    <h3>概要</h3>
+    <p class="lead">History の日本語を英語にした。HTML を Strata-main 直下に置き、run-strata-hud.bat で今の IQ3_S を開く。モデルの再読み込みはしていない。</p>
+    <h3>変更ファイル</h3>
+    <ul>
+      <li>H:\CURSOR\Strata\Strata-main\strata-chat-hud.html</li>
+      <li>H:\CURSOR\Strata\Strata-main\run-strata-hud.bat</li>
+      <li>H:\CURSOR\Strata\Strata-main\serve\server.py</li>
+      <li>H:\CURSOR\Strata\Strata-main\serve\web\index.html</li>
+    </ul>
+  </article>
+  <article class="gh-entry" id="entry-1729">
+    <h2>17:29 — 画面の日本語を英語にする</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 17:29</p>
+    <h3>概要</h3>
+    <p class="lead">添付の取り消し、ダウンロード確認、起動の文言を英語にした。HTML 内の日本語は残っていない。モデル一覧が返す2件のエラー文も英語にし、一覧だけ再起動した。</p>
+  </article>
+  <article class="gh-entry" id="entry-1805">
+    <h2>18:05 — 開いている履歴の削除と、読み込み中の添付取消を直す</h2>
+    <p class="gh-entry-meta"><span class="gh-label gh-label-ok">ok</span> 18:05</p>
+    <h3>概要</h3>
+    <p class="lead">開いているスレッド、またはそれを含むフォルダを消すと、チャット欄も空になる。別のスレッドを消しても、開いている会話は残る。読み込み完了前に × したファイルは、完了後も添付へ戻らない。回答の生成中は、その会話の削除を止めて「Stop the answer first.」と出す。</p>
+    <h3>検証</h3>
+    <ul>
+      <li>開いたスレッドを YES で削除し、吹き出しが 0 件、保存もその ID が消えることを確認した。</li>
+      <li>別スレッドの削除では、開いている「KEEP-OPEN」が残った。</li>
+      <li>フォルダ内のスレッドを開いた状態でフォルダを削除し、吹き出しと保存が空になることを確認した。</li>
+      <li>読み込みを遅らせて × した slow.txt は送信本文に入らず、読み込みが終わった keep.txt は本文に入った。モデルへの本送信はしていない。</li>
+    </ul>
+    <h3>変更ファイル</h3>
+    <ul>
+      <li>H:\CURSOR\Strata\Strata-main\strata-chat-hud.html</li>
+      <li>H:\CURSOR\Strata\Strata-main\serve\web\index.html</li>
+      <li>H:\CURSOR\Strata\strata-chat-hud.html</li>
+    </ul>
+  </article>
+</main>
+
+<footer class="gh-footer">
+  <p>Cursor Dev Diary · style v2 (GitHub) · 2026-10-16</p>
+</footer>
+</body>
+</html>
